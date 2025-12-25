@@ -1,26 +1,28 @@
-# Heroku Deployable Rails App Template
+# GHG Reducer
 
-A production-ready full-stack boilerplate with a Rails 8 API backend and React 19 frontend, configured for single-app deployment on Heroku. Use this template to quickly start new web applications without the usual setup hassle.
+A full-stack web application for tracking and reducing greenhouse gas emissions, built with Rails 8 API backend and React 19 frontend.
 
-## What's Included
+## Status
 
-- **Rails 8 API** - Backend configured for API-only mode
-- **React 19 + TypeScript** - Modern frontend with type safety
-- **PostgreSQL** - Production-ready database
-- **Single-App Deployment** - Rails serves the React build from `public/`
-- **Testing** - RSpec (Rails) and Jest (React) pre-configured
-- **Linting** - RuboCop (Ruby) and ESLint (TypeScript) ready to go
-- **Heroku-Ready** - Procfile, production config, and Postgres addon support
+**In Progress** - This application is currently under active development.
+
+## Features (Planned)
+
+- **Activity Logging** - Track travel, purchases, and daily activities that contribute to your carbon footprint
+- **Emission Calculations** - Integration with Climatiq API for accurate emission factors
+- **Data Visualization** - Interactive charts and graphs using Recharts to visualize your carbon impact over time
+- **Personalized Recommendations** - Get actionable suggestions to reduce your environmental footprint
+- **Carbon Offsets** - Purchase carbon offsets through Stripe integration
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|------------|
 | Backend | Rails 8 (API mode) |
-| Frontend | React 19, TypeScript |
+| Frontend | React 19, TypeScript, Recharts |
 | Database | PostgreSQL |
+| APIs | Climatiq (emission factors), Stripe (payments) |
 | Testing | RSpec, Jest |
-| Linting | RuboCop, ESLint |
 | Deployment | Heroku |
 
 ## Prerequisites
@@ -34,42 +36,14 @@ Before you start, make sure you have:
 
 ## Getting Started
 
-### 1. Use This Template
-
-Click "Use this template" on GitHub, or clone manually:
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/heroku-deployable-rails-app-template.git my-new-app
-cd my-new-app
-rm -rf .git
-git init
-git add .
-git commit -m "Initial commit from template"
+git clone https://github.com/YOUR_USERNAME/ghg-reducer.git
+cd ghg-reducer
 ```
 
-### 2. Rename Your App
-
-Update these files with your app name (replace `myapp` with your app name):
-
-```bash
-# config/database.yml - Change database names
-sed -i '' 's/myapp/yourappname/g' config/database.yml
-
-# frontend/package.json - Change the name field (optional)
-```
-
-### 3. Generate New Credentials
-
-The template doesn't include credentials (for security). Generate your own:
-
-```bash
-# This creates config/master.key and config/credentials.yml.enc
-EDITOR="code --wait" rails credentials:edit
-```
-
-**Important:** Save `config/master.key` somewhere safe - you'll need it for Heroku.
-
-### 4. Install Dependencies
+### 2. Install Dependencies
 
 ```bash
 # Ruby gems
@@ -79,13 +53,32 @@ bundle install
 cd frontend && npm install && cd ..
 ```
 
-### 5. Create Databases
+### 3. Setup Database
 
 ```bash
 rails db:create db:migrate
 ```
 
-### 6. Verify Setup
+### 4. Configure API Keys
+
+Create your Rails credentials file:
+
+```bash
+EDITOR="code --wait" rails credentials:edit
+```
+
+Add your API keys:
+
+```yaml
+climatiq:
+  api_key: your_climatiq_api_key
+
+stripe:
+  secret_key: your_stripe_secret_key
+  publishable_key: your_stripe_publishable_key
+```
+
+### 5. Verify Setup
 
 ```bash
 # Run tests
@@ -234,4 +227,4 @@ git push heroku master
 
 ---
 
-*Forked from [login](https://github.com/YOUR_USERNAME/login) at commit `396be90`*
+*Forked from [heroku-deployable-rails-app-template](https://github.com/ctneal91/heroku-deployable-rails-app-template) at commit `743fafb`*
