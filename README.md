@@ -2,6 +2,10 @@
 
 A full-stack web application for tracking and reducing greenhouse gas emissions, built with Rails 8 API backend and React 19 frontend.
 
+## Live Demo
+
+**[https://ghg-reducer-4776ed9b5556.herokuapp.com/](https://ghg-reducer-4776ed9b5556.herokuapp.com/)**
+
 ## Status
 
 **In Progress** - This application is currently under active development.
