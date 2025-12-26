@@ -1,4 +1,6 @@
 class Activity < ApplicationRecord
+  belongs_to :user, optional: true
+
   ACTIVITY_TYPES = %w[driving flight electricity natural_gas food_beef food_chicken purchase].freeze
 
   EMISSION_FACTORS = {
