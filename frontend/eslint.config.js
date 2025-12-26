@@ -30,7 +30,9 @@ export default [
         Headers: 'readonly',
         URL: 'readonly',
         URLSearchParams: 'readonly',
-        React: 'readonly'
+        React: 'readonly',
+        localStorage: 'readonly',
+        crypto: 'readonly'
       }
     },
     plugins: {

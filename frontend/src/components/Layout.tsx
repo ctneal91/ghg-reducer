@@ -16,6 +16,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ListAltIcon from '@mui/icons-material/ListAlt';
+import { UserMenu } from './UserMenu';
 
 const DRAWER_WIDTH = 240;
 
@@ -83,9 +84,13 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             {navItems.find((item) => item.id === currentView)?.label || 'Dashboard'}
           </Typography>
+          <UserMenu
+            onLoginClick={() => onNavigate('login')}
+            onSignupClick={() => onNavigate('signup')}
+          />
         </Toolbar>
       </AppBar>
 
