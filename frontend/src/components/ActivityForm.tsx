@@ -13,17 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import { api } from '../api/client';
-import { ActivityType, ActivityFormData } from '../types/activity';
-
-const activityTypes: { value: ActivityType; label: string; unit: string }[] = [
-  { value: 'driving', label: 'Driving', unit: 'km' },
-  { value: 'flight', label: 'Flight', unit: 'km' },
-  { value: 'electricity', label: 'Electricity', unit: 'kWh' },
-  { value: 'natural_gas', label: 'Natural Gas', unit: 'therms' },
-  { value: 'food_beef', label: 'Food (Beef)', unit: 'kg' },
-  { value: 'food_chicken', label: 'Food (Chicken)', unit: 'kg' },
-  { value: 'purchase', label: 'Purchase', unit: 'USD' },
-];
+import { ActivityType, ActivityFormData, ACTIVITY_TYPES, getActivityTypeInfo } from '../types/activity';
 
 interface ActivityFormProps {
   onSuccess?: () => void;
@@ -40,7 +30,7 @@ export function ActivityForm({ onSuccess }: ActivityFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const selectedType = activityTypes.find((t) => t.value === formData.activity_type);
+  const selectedType = getActivityTypeInfo(formData.activity_type);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,7 +87,7 @@ export function ActivityForm({ onSuccess }: ActivityFormProps) {
                 setFormData({ ...formData, activity_type: e.target.value as ActivityType })
               }
             >
-              {activityTypes.map((type) => (
+              {ACTIVITY_TYPES.map((type) => (
                 <MenuItem key={type.value} value={type.value}>
                   {type.label}
                 </MenuItem>

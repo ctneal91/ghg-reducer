@@ -7,6 +7,29 @@ export type ActivityType =
   | 'food_chicken'
   | 'purchase';
 
+export interface ActivityTypeInfo {
+  value: ActivityType;
+  label: string;
+  pluralLabel: string;
+  unit: string;
+}
+
+export const ACTIVITY_TYPES: ActivityTypeInfo[] = [
+  { value: 'driving', label: 'Driving', pluralLabel: 'Driving', unit: 'km' },
+  { value: 'flight', label: 'Flight', pluralLabel: 'Flights', unit: 'km' },
+  { value: 'electricity', label: 'Electricity', pluralLabel: 'Electricity', unit: 'kWh' },
+  { value: 'natural_gas', label: 'Natural Gas', pluralLabel: 'Natural Gas', unit: 'therms' },
+  { value: 'food_beef', label: 'Food (Beef)', pluralLabel: 'Beef', unit: 'kg' },
+  { value: 'food_chicken', label: 'Food (Chicken)', pluralLabel: 'Chicken', unit: 'kg' },
+  { value: 'purchase', label: 'Purchase', pluralLabel: 'Purchases', unit: 'USD' },
+];
+
+export const getActivityTypeInfo = (type: ActivityType): ActivityTypeInfo | undefined =>
+  ACTIVITY_TYPES.find((t) => t.value === type);
+
+export const getActivityTypeLabel = (type: string): string =>
+  ACTIVITY_TYPES.find((t) => t.value === type)?.pluralLabel || type;
+
 export interface Activity {
   id: number;
   activity_type: ActivityType;

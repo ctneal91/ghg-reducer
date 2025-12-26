@@ -12,7 +12,7 @@ import Co2Icon from '@mui/icons-material/Co2';
 import LocalActivityIcon from '@mui/icons-material/LocalActivity';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import { api } from '../api/client';
-import { Activity } from '../types/activity';
+import { Activity, getActivityTypeLabel } from '../types/activity';
 
 interface DashboardProps {
   refreshTrigger?: number;
@@ -65,16 +65,6 @@ export function Dashboard({ refreshTrigger }: DashboardProps) {
   }, {});
 
   const topEmitter = Object.entries(emissionsByType).sort((a, b) => b[1] - a[1])[0];
-
-  const typeLabels: Record<string, string> = {
-    driving: 'Driving',
-    flight: 'Flights',
-    electricity: 'Electricity',
-    natural_gas: 'Natural Gas',
-    food_beef: 'Beef',
-    food_chicken: 'Chicken',
-    purchase: 'Purchases',
-  };
 
   return (
     <Box>
@@ -129,7 +119,7 @@ export function Dashboard({ refreshTrigger }: DashboardProps) {
                     Top Emitter
                   </Typography>
                   <Typography variant="h4">
-                    {topEmitter ? typeLabels[topEmitter[0]] || topEmitter[0] : '-'}
+                    {topEmitter ? getActivityTypeLabel(topEmitter[0]) : '-'}
                   </Typography>
                   <Typography color="text.secondary" variant="body2">
                     {topEmitter ? `${topEmitter[1].toFixed(1)} kg CO2` : 'No data'}
@@ -157,7 +147,7 @@ export function Dashboard({ refreshTrigger }: DashboardProps) {
                     .map(([type, emissions]) => (
                       <Box key={type} sx={{ mb: 2 }}>
                         <Box display="flex" justifyContent="space-between" mb={0.5}>
-                          <Typography>{typeLabels[type] || type}</Typography>
+                          <Typography>{getActivityTypeLabel(type)}</Typography>
                           <Typography fontWeight="bold">
                             {emissions.toFixed(1)} kg CO2
                           </Typography>

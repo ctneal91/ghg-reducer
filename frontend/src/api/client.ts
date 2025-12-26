@@ -54,6 +54,27 @@ async function handleResponse<T>(response: Response): Promise<T> {
   return response.json();
 }
 
+type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
+
+interface FetchOptions {
+  method?: HttpMethod;
+  body?: unknown;
+  useAuth?: boolean;
+}
+
+async function apiFetch<T>(endpoint: string, options: FetchOptions = {}): Promise<T> {
+  const { method = 'GET', body, useAuth = true } = options;
+  const config: RequestInit = {
+    method,
+    headers: useAuth ? getHeaders() : { 'Content-Type': 'application/json' },
+  };
+  if (body) {
+    config.body = JSON.stringify(body);
+  }
+  const response = await fetch(`${API_BASE}${endpoint}`, config);
+  return handleResponse<T>(response);
+}
+
 export const api = {
   // Auth endpoints
   async signup(data: SignupData): Promise<AuthResponse> {
