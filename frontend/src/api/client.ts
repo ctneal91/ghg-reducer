@@ -77,98 +77,45 @@ async function apiFetch<T>(endpoint: string, options: FetchOptions = {}): Promis
 
 export const api = {
   // Auth endpoints
-  async signup(data: SignupData): Promise<AuthResponse> {
-    const response = await fetch(`${API_BASE}/auth/signup`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    return handleResponse<AuthResponse>(response);
-  },
+  signup: (data: SignupData): Promise<AuthResponse> =>
+    apiFetch('/auth/signup', { method: 'POST', body: data, useAuth: false }),
 
-  async login(data: LoginData): Promise<AuthResponse> {
-    const response = await fetch(`${API_BASE}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    return handleResponse<AuthResponse>(response);
-  },
+  login: (data: LoginData): Promise<AuthResponse> =>
+    apiFetch('/auth/login', { method: 'POST', body: data, useAuth: false }),
 
-  async logout(): Promise<void> {
-    const token = getToken();
-    if (token) {
-      await fetch(`${API_BASE}/auth/logout`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  logout: async (): Promise<void> => {
+    if (getToken()) {
+      await apiFetch('/auth/logout', { method: 'DELETE' });
     }
   },
 
-  async getMe(): Promise<{ user: User }> {
-    const response = await fetch(`${API_BASE}/auth/me`, {
-      headers: getHeaders(),
-    });
-    return handleResponse<{ user: User }>(response);
-  },
+  getMe: (): Promise<{ user: User }> =>
+    apiFetch('/auth/me'),
 
-  async claimActivities(): Promise<{ claimed_count: number }> {
-    const sessionId = localStorage.getItem(SESSION_ID_KEY);
-    const response = await fetch(`${API_BASE}/auth/claim`, {
+  claimActivities: (): Promise<{ claimed_count: number }> =>
+    apiFetch('/auth/claim', {
       method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify({ session_id: sessionId }),
-    });
-    return handleResponse<{ claimed_count: number }>(response);
-  },
+      body: { session_id: localStorage.getItem(SESSION_ID_KEY) },
+    }),
 
   getSessionId,
 
   // Activity endpoints
-  async getActivities(): Promise<ActivitiesResponse> {
-    const response = await fetch(`${API_BASE}/activities`, {
-      headers: getHeaders(),
-    });
-    return handleResponse<ActivitiesResponse>(response);
-  },
+  getActivities: (): Promise<ActivitiesResponse> =>
+    apiFetch('/activities'),
 
-  async getActivity(id: number): Promise<Activity> {
-    const response = await fetch(`${API_BASE}/activities/${id}`, {
-      headers: getHeaders(),
-    });
-    return handleResponse<Activity>(response);
-  },
+  getActivity: (id: number): Promise<Activity> =>
+    apiFetch(`/activities/${id}`),
 
-  async createActivity(data: ActivityFormData): Promise<Activity> {
-    const response = await fetch(`${API_BASE}/activities`, {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify({ activity: data }),
-    });
-    return handleResponse<Activity>(response);
-  },
+  createActivity: (data: ActivityFormData): Promise<Activity> =>
+    apiFetch('/activities', { method: 'POST', body: { activity: data } }),
 
-  async updateActivity(id: number, data: Partial<ActivityFormData>): Promise<Activity> {
-    const response = await fetch(`${API_BASE}/activities/${id}`, {
-      method: 'PATCH',
-      headers: getHeaders(),
-      body: JSON.stringify({ activity: data }),
-    });
-    return handleResponse<Activity>(response);
-  },
+  updateActivity: (id: number, data: Partial<ActivityFormData>): Promise<Activity> =>
+    apiFetch(`/activities/${id}`, { method: 'PATCH', body: { activity: data } }),
 
-  async deleteActivity(id: number): Promise<void> {
-    const response = await fetch(`${API_BASE}/activities/${id}`, {
-      method: 'DELETE',
-      headers: getHeaders(),
-    });
-    if (!response.ok) {
-      throw new Error('Failed to delete activity');
-    }
-  },
+  deleteActivity: (id: number): Promise<void> =>
+    apiFetch(`/activities/${id}`, { method: 'DELETE' }),
 
-  async getEmissionFactors(): Promise<Record<string, EmissionFactor>> {
-    const response = await fetch(`${API_BASE}/emission_factors`);
-    return handleResponse<Record<string, EmissionFactor>>(response);
-  },
+  getEmissionFactors: (): Promise<Record<string, EmissionFactor>> =>
+    apiFetch('/emission_factors', { useAuth: false }),
 };

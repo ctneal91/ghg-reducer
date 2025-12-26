@@ -39,7 +39,8 @@ export default [
         beforeEach: 'readonly',
         afterEach: 'readonly',
         it: 'readonly',
-        setTimeout: 'readonly'
+        setTimeout: 'readonly',
+        RequestInit: 'readonly'
       }
     },
     plugins: {
