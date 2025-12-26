@@ -10,6 +10,12 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :activities
       get "emission_factors", to: "activities#emission_factors"
+
+      post "auth/signup", to: "auth#signup"
+      post "auth/login", to: "auth#login"
+      delete "auth/logout", to: "auth#logout"
+      get "auth/me", to: "auth#me"
+      post "auth/claim", to: "auth#claim"
     end
   end
 
