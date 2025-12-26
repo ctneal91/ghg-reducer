@@ -88,7 +88,7 @@ stripe:
 bin/setup-hooks
 ```
 
-This installs pre-commit hooks that automatically run RuboCop (Ruby) and ESLint (TypeScript) on staged files before each commit.
+This installs pre-commit hooks that automatically run RuboCop (Ruby) and ESLint (TypeScript) on staged files before each commit. Because of cost limitations with a CI pipeline, we also run the full test suite using RSpec and Jest for each commit. I will revisit this decision at a later date as the app becomes more robust.
 
 ### 6. Verify Setup
 
