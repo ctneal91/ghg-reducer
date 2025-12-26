@@ -1,0 +1,53 @@
+#!/bin/bash
+
+echo "Running pre-commit hooks..."
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+# Track if any check fails
+FAILED=0
+
+# Get list of staged Ruby files
+STAGED_RUBY_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.rb$')
+
+# Get list of staged TypeScript/JavaScript files in frontend
+STAGED_TS_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^frontend/.*\.(ts|tsx|js|jsx)$')
+
+# Run RuboCop on staged Ruby files
+if [ -n "$STAGED_RUBY_FILES" ]; then
+  echo "Running RuboCop on staged Ruby files..."
+  echo "$STAGED_RUBY_FILES" | xargs bundle exec rubocop --force-exclusion
+  if [ $? -ne 0 ]; then
+    echo -e "${RED}RuboCop failed. Please fix the issues above.${NC}"
+    FAILED=1
+  else
+    echo -e "${GREEN}RuboCop passed!${NC}"
+  fi
+fi
+
+# Run ESLint on staged TypeScript files
+if [ -n "$STAGED_TS_FILES" ]; then
+  echo "Running ESLint on staged frontend files..."
+  cd frontend
+  # Convert full paths to relative paths from frontend directory
+  RELATIVE_FILES=$(echo "$STAGED_TS_FILES" | sed 's|^frontend/||')
+  echo "$RELATIVE_FILES" | xargs npm run lint -- --max-warnings=0
+  if [ $? -ne 0 ]; then
+    echo -e "${RED}ESLint failed. Please fix the issues above.${NC}"
+    FAILED=1
+  else
+    echo -e "${GREEN}ESLint passed!${NC}"
+  fi
+  cd ..
+fi
+
+if [ $FAILED -ne 0 ]; then
+  echo -e "${RED}Pre-commit hooks failed. Commit aborted.${NC}"
+  exit 1
+fi
+
+echo -e "${GREEN}All pre-commit checks passed!${NC}"
+exit 0

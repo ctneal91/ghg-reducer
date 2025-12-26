@@ -82,7 +82,15 @@ stripe:
   publishable_key: your_stripe_publishable_key
 ```
 
-### 5. Verify Setup
+### 5. Install Git Hooks
+
+```bash
+bin/setup-hooks
+```
+
+This installs pre-commit hooks that automatically run RuboCop (Ruby) and ESLint (TypeScript) on staged files before each commit.
+
+### 6. Verify Setup
 
 ```bash
 # Run tests

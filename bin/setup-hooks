@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Setup script to install git hooks
+
+echo "Installing git hooks..."
+
+# Copy hooks to .git/hooks
+cp bin/hooks/pre-commit .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+
+echo "Git hooks installed successfully!"
+echo "Pre-commit hook will run RuboCop and ESLint on staged files."
