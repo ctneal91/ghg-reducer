@@ -29,7 +29,8 @@ export default [
         Request: 'readonly',
         Headers: 'readonly',
         URL: 'readonly',
-        URLSearchParams: 'readonly'
+        URLSearchParams: 'readonly',
+        React: 'readonly'
       }
     },
     plugins: {
