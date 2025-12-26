@@ -1,10 +1,10 @@
 module Api
   module V1
     class ActivitiesController < ApplicationController
-      before_action :set_activity, only: [:show, :update, :destroy]
+      before_action :set_activity, only: %i[show update destroy]
 
       def index
-        @activities = Activity.order(occurred_at: :desc)
+        @activities = scoped_activities.order(occurred_at: :desc)
         render json: {
           activities: @activities,
           summary: {
@@ -20,6 +20,8 @@ module Api
 
       def create
         @activity = Activity.new(activity_params)
+        @activity.user = current_user
+        @activity.session_id = session_id unless current_user
 
         if @activity.save
           render json: @activity, status: :created
@@ -47,8 +49,18 @@ module Api
 
       private
 
+      def scoped_activities
+        if current_user
+          Activity.where(user_id: current_user.id)
+        elsif session_id.present?
+          Activity.where(session_id: session_id)
+        else
+          Activity.none
+        end
+      end
+
       def set_activity
-        @activity = Activity.find(params[:id])
+        @activity = scoped_activities.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         render json: { error: "Activity not found" }, status: :not_found
       end
