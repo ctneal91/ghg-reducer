@@ -24,6 +24,7 @@ export default [
         test: 'readonly',
         expect: 'readonly',
         HTMLElement: 'readonly',
+        HTMLInputElement: 'readonly',
         fetch: 'readonly',
         Response: 'readonly',
         Request: 'readonly',
@@ -32,7 +33,13 @@ export default [
         URLSearchParams: 'readonly',
         React: 'readonly',
         localStorage: 'readonly',
-        crypto: 'readonly'
+        crypto: 'readonly',
+        jest: 'readonly',
+        describe: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        it: 'readonly',
+        setTimeout: 'readonly'
       }
     },
     plugins: {
