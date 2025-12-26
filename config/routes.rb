@@ -8,7 +8,8 @@ Rails.application.routes.draw do
   # API routes
   namespace :api do
     namespace :v1 do
-      # API endpoints go here
+      resources :activities
+      get "emission_factors", to: "activities#emission_factors"
     end
   end
 
