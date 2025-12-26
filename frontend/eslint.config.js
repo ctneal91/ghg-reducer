@@ -23,7 +23,13 @@ export default [
         console: 'readonly',
         test: 'readonly',
         expect: 'readonly',
-        HTMLElement: 'readonly'
+        HTMLElement: 'readonly',
+        fetch: 'readonly',
+        Response: 'readonly',
+        Request: 'readonly',
+        Headers: 'readonly',
+        URL: 'readonly',
+        URLSearchParams: 'readonly'
       }
     },
     plugins: {
