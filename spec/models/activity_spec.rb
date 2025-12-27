@@ -138,6 +138,17 @@ RSpec.describe Activity, type: :model do
     end
   end
 
+  describe ".climatiq_client" do
+    it "returns a ClimatiqClient instance" do
+      # Clear the memoized client and allow real instantiation
+      Activity.instance_variable_set(:@climatiq_client, nil)
+      allow(Activity).to receive(:climatiq_client).and_call_original
+
+      client = Activity.climatiq_client
+      expect(client).to be_a(ClimatiqClient)
+    end
+  end
+
   describe "Climatiq integration" do
     let(:mock_client) { instance_double(ClimatiqClient) }
 

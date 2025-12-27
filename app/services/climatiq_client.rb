@@ -53,8 +53,10 @@ class ClimatiqClient
     end
   end
 
-  def initialize(api_key: nil)
-    @api_key = api_key || fetch_api_key
+  NOT_PROVIDED = Object.new.freeze
+
+  def initialize(api_key: NOT_PROVIDED)
+    @api_key = api_key == NOT_PROVIDED ? fetch_api_key : api_key
   end
 
   def self.api_key_from_credentials

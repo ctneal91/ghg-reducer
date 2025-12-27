@@ -62,3 +62,5 @@ group :development, :test do
   # HTTP request stubbing
   gem "webmock"
 end
+
+gem "dotenv-rails", "~> 3.2", :groups => [:development, :test]

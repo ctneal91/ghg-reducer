@@ -39,6 +39,12 @@ rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
 RSpec.configure do |config|
+  # Mock Climatiq client globally to prevent real API calls in tests
+  config.before(:each) do
+    mock_client = instance_double(ClimatiqClient, configured?: false)
+    allow(Activity).to receive(:climatiq_client).and_return(mock_client)
+  end
+
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
     Rails.root.join('spec/fixtures')
