@@ -54,7 +54,19 @@ class ClimatiqClient
   end
 
   def initialize(api_key: nil)
-    @api_key = api_key || ENV.fetch("CLIMATIQ_API_KEY", nil)
+    @api_key = api_key || fetch_api_key
+  end
+
+  def self.api_key_from_credentials
+    Rails.application.credentials.dig(:climatiq, :api_key)
+  rescue StandardError
+    nil
+  end
+
+  private_class_method :api_key_from_credentials
+
+  def fetch_api_key
+    ENV.fetch("CLIMATIQ_API_KEY", nil) || self.class.send(:api_key_from_credentials)
   end
 
   def configured?

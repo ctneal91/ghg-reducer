@@ -63,15 +63,19 @@ cd frontend && npm install && cd ..
 rails db:create db:migrate
 ```
 
-### 4. Configure API Keys
+### 4. Configure API Keys (Optional)
 
-Create your Rails credentials file:
+The app works without API keys using local emission factors. For real-time emission data from [Climatiq](https://www.climatiq.io/), set the API key:
 
+**Option A: Environment variable (recommended for development)**
+```bash
+export CLIMATIQ_API_KEY=your_climatiq_api_key
+```
+
+**Option B: Rails credentials (recommended for production)**
 ```bash
 EDITOR="code --wait" rails credentials:edit
 ```
-
-Add your API keys:
 
 ```yaml
 climatiq:
@@ -81,6 +85,8 @@ stripe:
   secret_key: your_stripe_secret_key
   publishable_key: your_stripe_publishable_key
 ```
+
+> **Note**: Without CLIMATIQ_API_KEY, the app uses built-in emission factors. With it, you get real-time factors from EPA, DEFRA, and other authoritative sources.
 
 ### 5. Install Git Hooks
 

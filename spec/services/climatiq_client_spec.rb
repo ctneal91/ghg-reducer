@@ -18,6 +18,42 @@ RSpec.describe ClimatiqClient do
       client = described_class.new(api_key: "")
       expect(client.configured?).to be false
     end
+
+    context "when API key is from environment" do
+      before do
+        allow(ENV).to receive(:fetch).with("CLIMATIQ_API_KEY", nil).and_return("env-api-key")
+        allow(ClimatiqClient).to receive(:api_key_from_credentials).and_return(nil)
+      end
+
+      it "uses environment variable" do
+        client = described_class.new
+        expect(client.configured?).to be true
+      end
+    end
+
+    context "when API key is from Rails credentials" do
+      before do
+        allow(ENV).to receive(:fetch).with("CLIMATIQ_API_KEY", nil).and_return(nil)
+        allow(ClimatiqClient).to receive(:send).with(:api_key_from_credentials).and_return("creds-api-key")
+      end
+
+      it "uses credentials when env is not set" do
+        client = described_class.new
+        expect(client.configured?).to be true
+      end
+    end
+
+    context "when Rails credentials raises error" do
+      before do
+        allow(ENV).to receive(:fetch).with("CLIMATIQ_API_KEY", nil).and_return(nil)
+        allow(Rails.application.credentials).to receive(:dig).and_raise(StandardError.new("No credentials"))
+      end
+
+      it "returns nil and client is not configured" do
+        client = described_class.new
+        expect(client.configured?).to be false
+      end
+    end
   end
 
   describe "#estimate" do
