@@ -77,7 +77,7 @@ class ClimatiqClient
 
   # Estimate emissions for a given activity
   # Returns hash with :co2e (kg), :source, :activity_id, or nil if API unavailable
-  def estimate(activity_type:, quantity:, region: "GLOBAL")
+  def estimate(activity_type:, quantity:, region: "US")
     return nil unless configured?
 
     mapping = ACTIVITY_MAPPINGS[activity_type]
@@ -101,7 +101,7 @@ class ClimatiqClient
       mapping = ACTIVITY_MAPPINGS[activity[:activity_type]]
       next unless mapping
 
-      build_request_body(mapping, activity[:quantity], activity[:region] || "GLOBAL")
+      build_request_body(mapping, activity[:quantity], activity[:region] || "US")
     end
 
     return [] if requests.empty?
