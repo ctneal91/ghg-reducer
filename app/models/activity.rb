@@ -3,6 +3,7 @@ class Activity < ApplicationRecord
 
   ACTIVITY_TYPES = %w[driving flight electricity natural_gas food_beef food_chicken purchase].freeze
 
+  # Local fallback emission factors (used when Climatiq API is unavailable)
   EMISSION_FACTORS = {
     "driving" => { factor: 0.21, unit: "km", description: "kg CO2 per kilometer" },
     "flight" => { factor: 0.255, unit: "km", description: "kg CO2 per kilometer" },
@@ -23,13 +24,42 @@ class Activity < ApplicationRecord
     EMISSION_FACTORS[activity_type]
   end
 
+  def self.climatiq_client
+    @climatiq_client ||= ClimatiqClient.new
+  end
+
   private
 
   def calculate_emission
+    # Try Climatiq API first for real-time emission factors
+    if use_climatiq?
+      result = self.class.climatiq_client.estimate(
+        activity_type: activity_type,
+        quantity: quantity
+      )
+
+      if result
+        self.emission_kg = result[:co2e].round(2)
+        self.emission_source = result[:source] || "Climatiq"
+        self.unit = EMISSION_FACTORS.dig(activity_type, :unit)
+        return
+      end
+    end
+
+    # Fallback to local emission factors
+    calculate_emission_locally
+  end
+
+  def calculate_emission_locally
     factor_data = EMISSION_FACTORS[activity_type]
     return unless factor_data
 
     self.unit = factor_data[:unit]
-    self.emission_kg = quantity * factor_data[:factor]
+    self.emission_kg = (quantity * factor_data[:factor]).round(2)
+    self.emission_source = "local"
+  end
+
+  def use_climatiq?
+    self.class.climatiq_client.configured?
   end
 end

@@ -61,10 +61,17 @@ RSpec.describe Activity, type: :model do
   end
 
   describe "emission calculation" do
+    # Mock the Climatiq client as unconfigured by default so tests use local factors
+    before do
+      mock_client = instance_double(ClimatiqClient, configured?: false)
+      allow(Activity).to receive(:climatiq_client).and_return(mock_client)
+    end
+
     it "calculates emission_kg on save for driving" do
       activity = Activity.create!(activity_type: "driving", quantity: 100, occurred_at: Time.current)
       expect(activity.emission_kg).to eq(21.0) # 100 * 0.21
       expect(activity.unit).to eq("km")
+      expect(activity.emission_source).to eq("local")
     end
 
     it "calculates emission_kg on save for flight" do
@@ -128,6 +135,92 @@ RSpec.describe Activity, type: :model do
     it "contains all expected activity types" do
       expected = %w[driving flight electricity natural_gas food_beef food_chicken purchase]
       expect(Activity::ACTIVITY_TYPES).to eq(expected)
+    end
+  end
+
+  describe "Climatiq integration" do
+    let(:mock_client) { instance_double(ClimatiqClient) }
+
+    before do
+      allow(Activity).to receive(:climatiq_client).and_return(mock_client)
+    end
+
+    context "when Climatiq is configured and returns data" do
+      before do
+        allow(mock_client).to receive(:configured?).and_return(true)
+        allow(mock_client).to receive(:estimate).and_return({
+          co2e: 25.5,
+          co2e_unit: "kg",
+          source: "EPA",
+          source_year: 2023
+        })
+      end
+
+      it "uses Climatiq emission values" do
+        activity = Activity.create!(activity_type: "driving", quantity: 100, occurred_at: Time.current)
+
+        expect(activity.emission_kg).to eq(25.5)
+        expect(activity.emission_source).to eq("EPA")
+        expect(activity.unit).to eq("km")
+      end
+
+      it "calls Climatiq with correct parameters" do
+        expect(mock_client).to receive(:estimate).with(
+          activity_type: "electricity",
+          quantity: 500
+        )
+
+        Activity.create!(activity_type: "electricity", quantity: 500, occurred_at: Time.current)
+      end
+    end
+
+    context "when Climatiq is configured but returns nil" do
+      before do
+        allow(mock_client).to receive(:configured?).and_return(true)
+        allow(mock_client).to receive(:estimate).and_return(nil)
+      end
+
+      it "falls back to local emission factors" do
+        activity = Activity.create!(activity_type: "driving", quantity: 100, occurred_at: Time.current)
+
+        expect(activity.emission_kg).to eq(21.0)
+        expect(activity.emission_source).to eq("local")
+      end
+    end
+
+    context "when Climatiq is not configured" do
+      before do
+        allow(mock_client).to receive(:configured?).and_return(false)
+      end
+
+      it "uses local emission factors" do
+        activity = Activity.create!(activity_type: "driving", quantity: 100, occurred_at: Time.current)
+
+        expect(activity.emission_kg).to eq(21.0)
+        expect(activity.emission_source).to eq("local")
+      end
+
+      it "does not call Climatiq API" do
+        expect(mock_client).not_to receive(:estimate)
+        Activity.create!(activity_type: "driving", quantity: 100, occurred_at: Time.current)
+      end
+    end
+
+    context "when Climatiq returns result without source" do
+      before do
+        allow(mock_client).to receive(:configured?).and_return(true)
+        allow(mock_client).to receive(:estimate).and_return({
+          co2e: 30.0,
+          co2e_unit: "kg",
+          source: nil
+        })
+      end
+
+      it "defaults emission_source to Climatiq" do
+        activity = Activity.create!(activity_type: "driving", quantity: 100, occurred_at: Time.current)
+
+        expect(activity.emission_source).to eq("Climatiq")
+      end
     end
   end
 end
