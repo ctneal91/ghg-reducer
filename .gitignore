@@ -33,3 +33,6 @@
 
 # Claude Code memory file - local only
 CLAUDE.md
+
+# Test coverage reports
+/coverage/
