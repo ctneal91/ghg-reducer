@@ -4,6 +4,12 @@ RSpec.describe "Api::V1::Activities", type: :request do
   let(:session_id) { SecureRandom.uuid }
   let(:headers) { { "X-Session-Id" => session_id } }
 
+  def auth_headers_for(user)
+    secret = Rails.application.credentials.secret_key_base || ENV.fetch("SECRET_KEY_BASE", "dev-secret")
+    token = JWT.encode({ user_id: user.id, exp: 24.hours.from_now.to_i }, secret, "HS256")
+    { "Authorization" => "Bearer #{token}" }
+  end
+
   describe "GET /api/v1/activities" do
     it "returns a list of activities with summary" do
       Activity.create!(activity_type: "driving", quantity: 100, occurred_at: Time.current, session_id: session_id)
@@ -26,6 +32,28 @@ RSpec.describe "Api::V1::Activities", type: :request do
 
       json = JSON.parse(response.body)
       expect(json["activities"].length).to eq(1)
+    end
+
+    it "returns activities for authenticated user" do
+      user = User.create!(email: "test@example.com", password: "password123", name: "Test")
+      Activity.create!(activity_type: "driving", quantity: 100, occurred_at: Time.current, user_id: user.id)
+      Activity.create!(activity_type: "flight", quantity: 500, occurred_at: Time.current, session_id: "other-session")
+
+      get "/api/v1/activities", headers: auth_headers_for(user)
+
+      json = JSON.parse(response.body)
+      expect(json["activities"].length).to eq(1)
+      expect(json["activities"].first["activity_type"]).to eq("driving")
+    end
+
+    it "returns empty list when no session_id or auth" do
+      Activity.create!(activity_type: "driving", quantity: 100, occurred_at: Time.current, session_id: session_id)
+
+      get "/api/v1/activities"
+
+      expect(response).to have_http_status(:ok)
+      json = JSON.parse(response.body)
+      expect(json["activities"]).to be_empty
     end
   end
 
@@ -106,6 +134,16 @@ RSpec.describe "Api::V1::Activities", type: :request do
       patch "/api/v1/activities/#{activity.id}", params: { activity: { quantity: 100 } }, headers: headers
 
       expect(response).to have_http_status(:not_found)
+    end
+
+    it "returns errors for invalid update data" do
+      activity = Activity.create!(activity_type: "driving", quantity: 50, occurred_at: Time.current, session_id: session_id)
+
+      patch "/api/v1/activities/#{activity.id}", params: { activity: { quantity: -10 } }, headers: headers
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      json = JSON.parse(response.body)
+      expect(json["errors"]).to be_present
     end
   end
 

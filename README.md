@@ -91,7 +91,7 @@ bin/setup-hooks
 This installs pre-commit hooks that automatically run on each commit:
 - **RuboCop** - Ruby linting on staged files
 - **ESLint** - TypeScript/React linting on staged files
-- **RSpec** - Full Rails test suite (61 tests, 80% coverage minimum)
+- **RSpec** - Full Rails test suite (66 tests) with 100% line coverage enforcement
 - **Jest** - Full React test suite (100 tests) with coverage enforcement:
   - Branches: 85% minimum
   - Functions: 95% minimum
