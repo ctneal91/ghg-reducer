@@ -40,7 +40,9 @@ export default [
         afterEach: 'readonly',
         it: 'readonly',
         setTimeout: 'readonly',
-        RequestInit: 'readonly'
+        RequestInit: 'readonly',
+        global: 'readonly',
+        HTMLButtonElement: 'readonly'
       }
     },
     plugins: {

@@ -145,4 +145,55 @@ describe('ActivityForm', () => {
 
     expect(quantityInput.value).toBe('');
   });
+
+  test('changes activity type', async () => {
+    render(<ActivityForm />);
+
+    // Open the select dropdown
+    const selectButton = screen.getByRole('combobox');
+    await userEvent.click(selectButton);
+
+    // Select a different activity type
+    const flightOption = await screen.findByRole('option', { name: 'Flight' });
+    await userEvent.click(flightOption);
+
+    // Verify the selection changed (the label in the combobox should update)
+    expect(selectButton).toHaveTextContent('Flight');
+  });
+
+  test('updates description field', async () => {
+    render(<ActivityForm />);
+
+    const descriptionInput = screen.getByLabelText('Description (optional)');
+    await userEvent.type(descriptionInput, 'My commute to work');
+
+    expect(descriptionInput).toHaveValue('My commute to work');
+  });
+
+  test('updates date field', async () => {
+    render(<ActivityForm />);
+
+    // Find the date input by its type attribute
+    const dateInput = document.querySelector('input[type="date"]') as HTMLInputElement;
+    fireEvent.change(dateInput, { target: { value: '2024-06-15' } });
+
+    expect(dateInput).toHaveValue('2024-06-15');
+  });
+
+  test('handles non-Error exception in submission', async () => {
+    mockApi.createActivity.mockRejectedValue('String error');
+
+    render(<ActivityForm />);
+
+    const quantityInput = screen.getByRole('spinbutton');
+    await userEvent.clear(quantityInput);
+    await userEvent.type(quantityInput, '100');
+
+    const submitButton = screen.getByRole('button', { name: 'Log Activity' });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to create activity')).toBeInTheDocument();
+    });
+  });
 });

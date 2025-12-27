@@ -35,14 +35,15 @@
       "src/**/*.{ts,tsx}",
       "!src/index.tsx",
       "!src/reportWebVitals.ts",
-      "!src/**/*.d.ts"
+      "!src/**/*.d.ts",
+      "!src/types/auth.ts"
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 45,
-        "functions": 45,
-        "lines": 55,
-        "statements": 55
+        "branches": 85,
+        "functions": 95,
+        "lines": 96,
+        "statements": 96
       }
     }
   },
