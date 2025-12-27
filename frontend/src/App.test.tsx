@@ -129,6 +129,7 @@ describe('App', () => {
       quantity: 100,
       unit: 'km',
       emission_kg: 21,
+      emission_source: 'local',
       occurred_at: '2024-01-15',
       created_at: '2024-01-15',
       updated_at: '2024-01-15',

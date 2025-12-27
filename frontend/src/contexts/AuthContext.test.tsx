@@ -130,7 +130,7 @@ describe('AuthContext', () => {
     test('login checks for guest activities first', async () => {
       mockApi.getMe.mockRejectedValue(new Error('Unauthorized'));
       mockApi.getActivities.mockResolvedValue({
-        activities: [{ id: 1, activity_type: 'car_travel' }],
+        activities: [{ id: 1, activity_type: 'driving', description: null, quantity: 10, unit: 'km', emission_kg: 2.1, emission_source: 'local', occurred_at: '2024-01-15', created_at: '2024-01-15', updated_at: '2024-01-15' }],
         summary: { activity_count: 1, total_emissions_kg: 10 },
       });
       mockApi.login.mockResolvedValue({
