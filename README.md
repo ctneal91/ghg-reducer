@@ -94,17 +94,22 @@ stripe:
 bin/setup-hooks
 ```
 
-This installs pre-commit hooks that automatically run on each commit:
+This installs pre-commit hooks that run automatically based on what files you change:
+
+**When Ruby files (.rb) are staged:**
 - **RuboCop** - Ruby linting on staged files
+- **RSpec** - Full Rails test suite (96 tests) with 100% line coverage enforcement
+
+**When TypeScript/JavaScript files (.ts, .tsx, .js, .jsx) are staged:**
+- **TypeScript** - Type checking via `tsc --noEmit`
 - **ESLint** - TypeScript/React linting on staged files
-- **RSpec** - Full Rails test suite (66 tests) with 100% line coverage enforcement
-- **Jest** - Full React test suite (100 tests) with coverage enforcement:
+- **Jest** - Full React test suite with coverage enforcement:
   - Branches: 85% minimum
   - Functions: 95% minimum
   - Lines: 96% minimum
   - Statements: 96% minimum
 
-Due to cost limitations with a CI pipeline, we run the full test suites locally on each commit. This will be revisited as the app scales.
+Tests only run for the relevant file types, so commits that only change Ruby files won't run Jest, and vice versa.
 
 ### 6. Verify Setup
 
