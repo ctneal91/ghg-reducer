@@ -33,7 +33,7 @@ if [ -n "$STAGED_RUBY_FILES" ]; then
   fi
 fi
 
-# Run ESLint on staged TypeScript files
+# Run ESLint and TypeScript checks on staged TypeScript files
 if [ -n "$STAGED_TS_FILES" ]; then
   # Try to find npm - check common locations
   if command -v npm &> /dev/null; then
@@ -52,8 +52,17 @@ if [ -n "$STAGED_TS_FILES" ]; then
   fi
 
   if [ -n "$NPM_CMD" ]; then
-    echo "Running ESLint on staged frontend files..."
+    echo "Running TypeScript type check..."
     cd frontend
+    npx tsc --noEmit
+    if [ $? -ne 0 ]; then
+      echo -e "${RED}TypeScript type check failed. Please fix the type errors above.${NC}"
+      FAILED=1
+    else
+      echo -e "${GREEN}TypeScript type check passed!${NC}"
+    fi
+
+    echo "Running ESLint on staged frontend files..."
     # Convert full paths to relative paths from frontend directory
     RELATIVE_FILES=$(echo "$STAGED_TS_FILES" | sed 's|^frontend/||')
     echo "$RELATIVE_FILES" | xargs $NPM_CMD run lint -- --max-warnings=0
@@ -65,8 +74,8 @@ if [ -n "$STAGED_TS_FILES" ]; then
     fi
     cd ..
   else
-    echo -e "${YELLOW}Warning: npm not found, skipping ESLint${NC}"
-    echo -e "${YELLOW}To enable ESLint checks, ensure npm is in your PATH${NC}"
+    echo -e "${YELLOW}Warning: npm not found, skipping ESLint and TypeScript checks${NC}"
+    echo -e "${YELLOW}To enable these checks, ensure npm is in your PATH${NC}"
   fi
 fi
 
