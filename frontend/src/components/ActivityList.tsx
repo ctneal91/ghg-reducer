@@ -13,9 +13,11 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { api } from '../api/client';
 import { Activity } from '../types/activity';
 
@@ -136,7 +138,14 @@ export function ActivityList({ refreshTrigger, onActivityDeleted }: ActivityList
                 {Number(activity.quantity).toLocaleString()} {activity.unit}
               </TableCell>
               <TableCell align="right">
-                {Number(activity.emission_kg).toFixed(2)}
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 0.5 }}>
+                  {Number(activity.emission_kg).toFixed(2)}
+                  {activity.emission_source && activity.emission_source !== 'local' && (
+                    <Tooltip title={`Source: ${activity.emission_source}`} arrow>
+                      <InfoOutlinedIcon sx={{ fontSize: 14, color: 'success.main', cursor: 'help' }} />
+                    </Tooltip>
+                  )}
+                </Box>
               </TableCell>
               <TableCell>{formatDate(activity.occurred_at)}</TableCell>
               <TableCell align="center">

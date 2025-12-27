@@ -37,6 +37,7 @@ export interface Activity {
   quantity: number;
   unit: string;
   emission_kg: number;
+  emission_source: string;
   occurred_at: string;
   created_at: string;
   updated_at: string;
