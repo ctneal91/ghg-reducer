@@ -7,6 +7,8 @@ import { api } from '../api/client';
 import { Activity, getActivityTypeLabel } from '../types/activity';
 import { StatCard } from './StatCard';
 import { EmissionsBreakdown } from './EmissionsBreakdown';
+import EmissionsPieChart from './EmissionsPieChart';
+import EmissionsTimeChart from './EmissionsTimeChart';
 
 interface DashboardProps {
   refreshTrigger?: number;
@@ -100,6 +102,14 @@ export function Dashboard({ refreshTrigger }: DashboardProps) {
             emissionsByType={emissionsByType}
             totalEmissions={totalEmissions}
           />
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <EmissionsPieChart emissionsByType={emissionsByType} />
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <EmissionsTimeChart activities={activities} />
         </Grid>
       </Grid>
     </Box>
