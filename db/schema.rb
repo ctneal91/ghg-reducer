@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_27_200936) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_27_205952) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -22,6 +22,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_27_200936) do
     t.string "emission_source", default: "local"
     t.datetime "occurred_at"
     t.decimal "quantity"
+    t.string "region", default: "US"
     t.string "session_id"
     t.string "unit"
     t.datetime "updated_at", null: false

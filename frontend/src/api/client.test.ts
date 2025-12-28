@@ -10,10 +10,14 @@ Object.defineProperty(global, 'crypto', {
   value: { randomUUID: () => mockUUID },
 });
 
+// Mock navigator.language
+const mockNavigatorLanguage = jest.spyOn(window.navigator, 'language', 'get');
+
 describe('API Client', () => {
   beforeEach(() => {
     mockFetch.mockClear();
     localStorage.clear();
+    mockNavigatorLanguage.mockReturnValue('en-US');
   });
 
   describe('setToken', () => {
@@ -34,6 +38,98 @@ describe('API Client', () => {
       localStorage.setItem('ghg_session_id', 'test-session');
       clearSession();
       expect(localStorage.getItem('ghg_session_id')).toBeNull();
+    });
+  });
+
+  describe('user region detection', () => {
+    it('extracts region from browser locale with region code', async () => {
+      mockNavigatorLanguage.mockReturnValue('en-GB');
+      localStorage.setItem('ghg_token', 'test-token');
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ activities: [] }),
+      });
+
+      await api.getActivities();
+
+      expect(mockFetch).toHaveBeenCalledWith('/api/v1/activities', {
+        method: 'GET',
+        headers: expect.objectContaining({
+          'X-User-Region': 'GB',
+        }),
+      });
+    });
+
+    it('extracts region from German locale', async () => {
+      mockNavigatorLanguage.mockReturnValue('de-DE');
+      localStorage.setItem('ghg_token', 'test-token');
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ activities: [] }),
+      });
+
+      await api.getActivities();
+
+      expect(mockFetch).toHaveBeenCalledWith('/api/v1/activities', {
+        method: 'GET',
+        headers: expect.objectContaining({
+          'X-User-Region': 'DE',
+        }),
+      });
+    });
+
+    it('falls back to language mapping when no region code', async () => {
+      mockNavigatorLanguage.mockReturnValue('de');
+      localStorage.setItem('ghg_token', 'test-token');
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ activities: [] }),
+      });
+
+      await api.getActivities();
+
+      expect(mockFetch).toHaveBeenCalledWith('/api/v1/activities', {
+        method: 'GET',
+        headers: expect.objectContaining({
+          'X-User-Region': 'DE',
+        }),
+      });
+    });
+
+    it('falls back to US for unknown language codes', async () => {
+      mockNavigatorLanguage.mockReturnValue('xx');
+      localStorage.setItem('ghg_token', 'test-token');
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ activities: [] }),
+      });
+
+      await api.getActivities();
+
+      expect(mockFetch).toHaveBeenCalledWith('/api/v1/activities', {
+        method: 'GET',
+        headers: expect.objectContaining({
+          'X-User-Region': 'US',
+        }),
+      });
+    });
+
+    it('defaults to US when navigator.language is empty', async () => {
+      mockNavigatorLanguage.mockReturnValue('');
+      localStorage.setItem('ghg_token', 'test-token');
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ activities: [] }),
+      });
+
+      await api.getActivities();
+
+      expect(mockFetch).toHaveBeenCalledWith('/api/v1/activities', {
+        method: 'GET',
+        headers: expect.objectContaining({
+          'X-User-Region': 'US',
+        }),
+      });
     });
   });
 
@@ -101,6 +197,7 @@ describe('API Client', () => {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
+          'X-User-Region': 'US',
           'Authorization': 'Bearer test-token',
         },
       });
@@ -127,6 +224,7 @@ describe('API Client', () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'X-User-Region': 'US',
           'Authorization': 'Bearer test-token',
         },
       });
@@ -146,6 +244,7 @@ describe('API Client', () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'X-User-Region': 'US',
           'X-Session-Id': 'test-session',
         },
       });

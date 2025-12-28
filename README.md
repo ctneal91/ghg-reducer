@@ -98,7 +98,7 @@ This installs pre-commit hooks that run automatically based on what files you ch
 
 **When Ruby files (.rb) are staged:**
 - **RuboCop** - Ruby linting on staged files
-- **RSpec** - Full Rails test suite (96 tests) with 100% line coverage enforcement
+- **RSpec** - Full Rails test suite (102 tests) with 100% line coverage enforcement
 
 **When TypeScript/JavaScript files (.ts, .tsx, .js, .jsx) are staged:**
 - **TypeScript** - Type checking via `tsc --noEmit`

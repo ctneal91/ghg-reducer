@@ -175,13 +175,24 @@ RSpec.describe Activity, type: :model do
         expect(activity.unit).to eq("km")
       end
 
-      it "calls Climatiq with correct parameters" do
+      it "calls Climatiq with correct parameters including region" do
         expect(mock_client).to receive(:estimate).with(
           activity_type: "electricity",
-          quantity: 500
+          quantity: 500,
+          region: "US"
         )
 
         Activity.create!(activity_type: "electricity", quantity: 500, occurred_at: Time.current)
+      end
+
+      it "passes custom region to Climatiq" do
+        expect(mock_client).to receive(:estimate).with(
+          activity_type: "driving",
+          quantity: 100,
+          region: "GB"
+        )
+
+        Activity.create!(activity_type: "driving", quantity: 100, occurred_at: Time.current, region: "GB")
       end
     end
 

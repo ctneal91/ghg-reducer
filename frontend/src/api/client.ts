@@ -31,9 +31,31 @@ export function clearSession(): void {
   localStorage.removeItem(SESSION_ID_KEY);
 }
 
+function getUserRegion(): string {
+  // Extract region from browser locale (e.g., "en-US" -> "US", "de-DE" -> "DE")
+  const locale = window.navigator.language || 'en-US';
+  const parts = locale.split('-');
+  if (parts.length >= 2) {
+    return parts[1].toUpperCase();
+  }
+  // Fallback: try to map language code to common region
+  const langToRegion: Record<string, string> = {
+    en: 'US',
+    de: 'DE',
+    fr: 'FR',
+    es: 'ES',
+    it: 'IT',
+    ja: 'JP',
+    zh: 'CN',
+    pt: 'BR',
+  };
+  return langToRegion[parts[0].toLowerCase()] || 'US';
+}
+
 function getHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    'X-User-Region': getUserRegion(),
   };
 
   const token = getToken();

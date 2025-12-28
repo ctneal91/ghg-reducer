@@ -141,6 +141,24 @@ RSpec.describe ClimatiqClient do
             "parameters" => { "passengers_distance" => 1000, "passengers_distance_unit" => "passenger-km" }
           ))
       end
+
+      it "includes region in the request body" do
+        client.estimate(activity_type: "driving", quantity: 100, region: "GB")
+
+        expect(WebMock).to have_requested(:post, "https://api.climatiq.io/data/v1/estimate")
+          .with(body: hash_including(
+            "emission_factor" => hash_including("region" => "GB")
+          ))
+      end
+
+      it "defaults region to US when not specified" do
+        client.estimate(activity_type: "driving", quantity: 100)
+
+        expect(WebMock).to have_requested(:post, "https://api.climatiq.io/data/v1/estimate")
+          .with(body: hash_including(
+            "emission_factor" => hash_including("region" => "US")
+          ))
+      end
     end
 
     context "when API returns an error" do

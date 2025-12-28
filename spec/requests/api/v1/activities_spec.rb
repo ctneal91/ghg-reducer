@@ -105,6 +105,54 @@ RSpec.describe "Api::V1::Activities", type: :request do
       expect(Activity.last.session_id).to eq(session_id)
     end
 
+    it "stores the user region from header" do
+      params = {
+        activity: {
+          activity_type: "driving",
+          quantity: 100,
+          occurred_at: Time.current
+        }
+      }
+
+      post "/api/v1/activities", params: params, headers: headers.merge("X-User-Region" => "GB")
+
+      expect(response).to have_http_status(:created)
+      json = JSON.parse(response.body)
+      expect(json["region"]).to eq("GB")
+    end
+
+    it "defaults region to US when header is missing" do
+      params = {
+        activity: {
+          activity_type: "driving",
+          quantity: 100,
+          occurred_at: Time.current
+        }
+      }
+
+      post "/api/v1/activities", params: params, headers: headers
+
+      expect(response).to have_http_status(:created)
+      json = JSON.parse(response.body)
+      expect(json["region"]).to eq("US")
+    end
+
+    it "defaults region to US when header contains invalid region" do
+      params = {
+        activity: {
+          activity_type: "driving",
+          quantity: 100,
+          occurred_at: Time.current
+        }
+      }
+
+      post "/api/v1/activities", params: params, headers: headers.merge("X-User-Region" => "INVALID")
+
+      expect(response).to have_http_status(:created)
+      json = JSON.parse(response.body)
+      expect(json["region"]).to eq("US")
+    end
+
     it "returns errors for invalid data" do
       params = { activity: { activity_type: "invalid_type", quantity: -5 } }
 

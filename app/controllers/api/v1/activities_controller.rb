@@ -22,6 +22,7 @@ module Api
         @activity = Activity.new(activity_params)
         @activity.user = current_user
         @activity.session_id = session_id unless current_user
+        @activity.region = user_region
 
         if @activity.save
           render json: @activity, status: :created

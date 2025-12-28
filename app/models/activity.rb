@@ -31,11 +31,15 @@ class Activity < ApplicationRecord
   private
 
   def calculate_emission
+    # Default region to US if not set
+    self.region ||= "US"
+
     # Try Climatiq API first for real-time emission factors
     if use_climatiq?
       result = self.class.climatiq_client.estimate(
         activity_type: activity_type,
-        quantity: quantity
+        quantity: quantity,
+        region: region
       )
 
       if result

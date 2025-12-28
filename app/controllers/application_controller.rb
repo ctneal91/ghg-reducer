@@ -9,6 +9,15 @@ class ApplicationController < ActionController::API
     request.headers["X-Session-Id"]
   end
 
+  def user_region
+    region = request.headers["X-User-Region"]&.upcase
+    return "US" unless region.present?
+
+    # Validate against Climatiq supported regions
+    valid_regions = %w[US GB DE FR AU CA JP CN IN BR ES IT NL BE AT CH SE NO DK FI PL PT IE NZ SG HK KR TW MX AR CL CO ZA]
+    valid_regions.include?(region) ? region : "US"
+  end
+
   def decoded_token
     token = request.headers["Authorization"]&.split(" ")&.last
     return nil unless token
