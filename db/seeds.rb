@@ -2,8 +2,8 @@
 
 puts "Creating user..."
 
-user = User.find_or_create_by!(email: "ctnealherman@gmail.com") do |u|
-  u.name = "CT Neal Herman"
+user = User.find_or_create_by!(email: "ctlnealherman@gmail.com") do |u|
+  u.name = "CT Neal-Herman"
   u.password = "app123"
 end
 

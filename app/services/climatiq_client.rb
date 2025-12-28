@@ -1,3 +1,6 @@
+require "net/http"
+require "json"
+
 # Climatiq API client for emission factor calculations
 # Documentation: https://www.climatiq.io/docs
 class ClimatiqClient
